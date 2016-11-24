@@ -62,7 +62,7 @@ namespace ShopCountProject
             return cookieList;
         }
 
-        public List<string> checkShop(List<string> lista, string url)
+        public string checkShop(List<string> lista, string url)
         {
             lista = new List<string>();
             //if (driver == null)
@@ -85,7 +85,7 @@ namespace ShopCountProject
             var la = driver.FindElements(By.XPath(
                 @"//div[@id='listingPage']//div[contains(@class,'rightCol')]/div[contains(@class,'squaresListing')]
                      /div[contains(@class,'squaresContent narrow')]/div[contains(@class,'productItem')]//a[contains(@class,'productItemContent')]
-                     /div[contains(@class, 'productPricesFieldArea')]/div[contains(@class, 'productShopName') or contains (@class,'orangeTex productOffersCount') ]"));
+                     /div[contains(@class, 'productPricesFieldArea')]/div[contains(@class, 'productShopName') or contains (@class,'productOffersCount')]"));
 
 
             foreach (var item in la)
@@ -95,18 +95,18 @@ namespace ShopCountProject
 
 
             sortList(lista, 1);
-            if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
-                Directory.CreateDirectory(@".\" + DateTime.Today.ToString("dd_MM_yyyy"));
+            if (checkOneFile.Checked == false)
+            {
+                if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
+                    Directory.CreateDirectory(@".\" + DateTime.Today.ToString("dd_MM_yyyy"));
 
-            File.WriteAllText(@".\" + @".\" + DateTime.Today.ToString("dd_MM_yyyy") + @"\" + tittle + ".cvs", csvWrite.ToString());
-            csvWrite.Clear();
-
-            return lista;
+                File.WriteAllText(@".\" + @".\" + DateTime.Today.ToString("dd_MM_yyyy") + @"\" + tittle + ".cvs", csvWrite.ToString());
+                csvWrite.Clear();
+            }
+            return tittle;
 
         }
-
-
-        public static List<string> checkShop(List<string> listaAll, string url, int countWeb)
+        public  string checkShop(List<string> listaAll, string url, int countWeb)
         {
             if (listaAll == null)
                 listaAll = new List<string>();
@@ -198,15 +198,18 @@ namespace ShopCountProject
 
             //        var tmp = result.Count();
             //// na plikach
-            if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
-                Directory.CreateDirectory(@".\" + DateTime.Today.ToString("dd_MM_yyyy"));
+            if (checkOneFile.Checked == false)
+            {
+                if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
+                    Directory.CreateDirectory(@".\" + DateTime.Today.ToString("dd_MM_yyyy"));
 
-            File.WriteAllText(@".\" + @".\" + DateTime.Today.ToString("dd_MM_yyyy") + @"\" + tittle + ".cvs", csvWrite.ToString());
-            csvWrite.Clear();
-            return lista;
+                File.WriteAllText(@".\" + @".\" + DateTime.Today.ToString("dd_MM_yyyy") + @"\" + tittle + ".cvs", csvWrite.ToString());
+                csvWrite.Clear();
+            }
+            return tittle;
 
         }
-        public List<string> checkShop(List<string> listaAll, string url, int countWeb, int cookieValue)
+        public string checkShop(List<string> listaAll, string url, int countWeb, int cookieValue)
         {
             Cookie cookie;
             if (listaAll == null)
@@ -224,16 +227,15 @@ namespace ShopCountProject
                 cookieList = getCookie();
             }
 
-
-
-
-
             var count = driver.FindElements(By.XPath("//div[@id='listingPageArea']/div[@id='listingPage']/div[@class='rightCol overflowH']/div[@class='yu']/div/div[@class='wholePages']/a"));
 
-            if (count.Count >= 5)
-                countWeb = 5;
-            else
-                countWeb = count.Count + 1;
+            if (countWeb != 1)
+            {
+                if (count.Count >= 5)
+                    countWeb = 5;
+                else
+                    countWeb = count.Count + 1;
+            }
 
             for (int j = 0; j < cookieList.Count; j++)
             {
@@ -244,18 +246,20 @@ namespace ShopCountProject
                 }
 
                 tittle = tittle.Replace("najlepsze ceny", DateTime.Now.ToString("HH_mm_ss"));
-                tittle += cookieList[j];
+                tittle += " - TEST AB";
 
+                listaAll = new List<string>();
                 for (int i = 1; i <= countWeb; i++)
                 {
-
-                    cookie = new Cookie("OIATM", cookieList[j]);
+                    DateTime expDate = new DateTime(2016, 12, 25);
+                    cookie = new Cookie("OIATM", cookieList[j]); //, "kotreba-sort-lf.okazje.biuro", "/", expDate);
 
                     do
                     {
                         driver.Manage().Cookies.DeleteCookieNamed("OIATM");
                         driver.Manage().Cookies.AddCookie(cookie);
                         driver.Url = url + i + ".html";
+
                     } while (driver.Manage().Cookies.GetCookieNamed("OIATM").Value != cookieList[j]);
 
 
@@ -263,7 +267,7 @@ namespace ShopCountProject
                     var la = driver.FindElements(By.XPath(
                         @"//div[@id='listingPage']//div[contains(@class,'rightCol')]/div[contains(@class,'squaresListing')]
                      /div[contains(@class,'squaresContent narrow')]/div[contains(@class,'productItem')]//a[contains(@class,'productItemContent')]
-                     /div[contains(@class, 'productPricesFieldArea')]/div[contains(@class, 'productShopName') or contains (@class,'orangeTex productOffersCount') ]"));
+                     /div[contains(@class, 'productPricesFieldArea')]/div[contains(@class, 'productShopName') or contains (@class,'productOffersCount') ]"));
 
 
                     var productID = driver.FindElements(By.XPath(
@@ -282,14 +286,14 @@ namespace ShopCountProject
                         productIdList.Add(item);
                     }
 
-
-                    sortList(lista, 1);
+                  //  csvWrite.AppendLine("Wersja " +(j+1));
+                    sortList(lista, (j+1));
 
 
                     lista = new List<string>();
                 }
-
-                sortList(listaAll, 0);
+                if (countWeb != 1)
+                    sortList(listaAll, 0);
 
                 #region duplikaty na listingach
                 //        var topCategory_id = driver.FindElements(By.XPath(
@@ -323,17 +327,23 @@ namespace ShopCountProject
                 #endregion
 
                 //// na plikach
+
+            }
+
+            if (checkOneFile.Checked == false)
+            {
                 if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
                     Directory.CreateDirectory(@".\" + DateTime.Today.ToString("dd_MM_yyyy"));
 
                 File.WriteAllText(@".\" + @".\" + DateTime.Today.ToString("dd_MM_yyyy") + @"\" + tittle + ".cvs", csvWrite.ToString());
                 csvWrite.Clear();
             }
-            return lista;
+
+            return tittle;
 
         }
 
-        public static void sortList(List<string> lista, int lastPage)
+        public  void sortList(List<string> lista, int lastPage)
         {
             // csvWrite.Clear();
 
@@ -358,15 +368,15 @@ namespace ShopCountProject
                     orderby count descending
                     select new { Value = g.Key, Count = count };
 
-
+            string tmpCookie = "";
 
             foreach (var x in q)
             {
                 if (lastPage == 0)
                 {
-                    var newLine = string.Format("TOTAL;{0};{1};", x.Value, x.Count);
+                    var newLine = string.Format(driver.Url + "   TOTAL;{0};{1};", x.Value, x.Count);
                     csvWrite.AppendLine(newLine);
-                    tmp = "TOTAL";
+                    tmp = driver.Url + "   TOTAL";
                 }
                 else
                 {
@@ -376,7 +386,7 @@ namespace ShopCountProject
                 }
             }
 
-
+           
 
             var newLine2 = string.Format("{0};Produkty wielofertowe;{1}", tmp, countTmp);
             csvWrite.AppendLine(newLine2);
@@ -403,14 +413,38 @@ namespace ShopCountProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (checkCookie.Checked)
-            {
-                if (driver == null)
-                    driver = new PhantomJSDriver();
-                driver.Url = richTextBox1.Text;
+            #region Cookie
 
-                lista = checkShop(lista, richTextBox1.Text, 5, 1);
+            if (checkCookie.Checked && checkLf.Checked == false)
+            {
+                listBox.AddRange((string[])richTextBox1.Lines);
+
+                foreach (var url in listBox)
+                {
+                    if (driver == null)
+                        driver = new FirefoxDriver();
+                    driver.Url = url;
+
+                    if (radioButton2.Checked)
+                        tittle = checkShop(lista, url, 5, 1);
+
+                    if (simpleSite.Checked)
+                        tittle = checkShop(lista, url, 1, 1);
+                   
+                }
+
+                if (checkOneFile.Checked)
+                {
+                    if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
+                        Directory.CreateDirectory(@".\" + DateTime.Today.ToString("dd_MM_yyyy"));
+
+                    File.WriteAllText(@".\" + @".\" + DateTime.Today.ToString("dd_MM_yyyy") + @"\" + tittle + ".cvs", csvWrite.ToString());
+                    csvWrite.Clear();
+                }
+
             }
+
+            #endregion
 
             #region Listing 
             if (checkListing.Checked && checkCookie.Checked == false)
@@ -427,18 +461,28 @@ namespace ShopCountProject
                                 driver = new PhantomJSDriver();
                             driver.Url = url;
 
-                            lista = checkShop(lista, url);
+                            tittle = checkShop(lista, url);
                             lista = new List<string>();
 
                             if (compareTrunk.Checked)
                             {
                                 driver.Manage().Timeouts().SetPageLoadTimeout(TimeSpan.FromSeconds(120));
 
-                                lista = checkShop(lista, url.Replace("www.okazje.info.pl", trunkUrl.Text));
+                                tittle = checkShop(lista, url.Replace("www.okazje.info.pl", trunkUrl.Text));
                                 lista = new List<string>();
                             }
 
                         }
+
+                        if (checkOneFile.Checked == true)
+                        {
+                            if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
+                                Directory.CreateDirectory(@".\" + DateTime.Today.ToString("dd_MM_yyyy"));
+
+                            File.WriteAllText(@".\" + @".\" + DateTime.Today.ToString("dd_MM_yyyy") + @"\" + tittle + ".cvs", csvWrite.ToString());
+                            csvWrite.Clear();
+                        }
+
                         driver.Quit();
                         driver = null;
                         listBox = new List<string>();
@@ -448,7 +492,7 @@ namespace ShopCountProject
                     {
                         foreach (var url in listBox)
                         {
-                            lista = checkShop(lista, url, 5);
+                            tittle = checkShop(lista, url, 5);
                             lista = new List<string>();
 
 
@@ -456,11 +500,21 @@ namespace ShopCountProject
                             {
                                 driver.Manage().Timeouts().SetPageLoadTimeout(TimeSpan.FromSeconds(120));
 
-                                lista = checkShop(lista, url.Replace("www.okazje.info.pl", trunkUrl.Text), 5);
+                                tittle = checkShop(lista, url.Replace("www.okazje.info.pl", trunkUrl.Text), 5);
                                 lista = new List<string>();
                             }
 
                         }
+
+                        if (checkOneFile.Checked == true)
+                        {
+                            if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
+                                Directory.CreateDirectory(@".\" + DateTime.Today.ToString("dd_MM_yyyy"));
+
+                            File.WriteAllText(@".\" + @".\" + DateTime.Today.ToString("dd_MM_yyyy") + @"\" + tittle + ".cvs", csvWrite.ToString());
+                            csvWrite.Clear();
+                        }
+
                         driver.Quit();
                         driver = null;
                         listBox = new List<string>();
@@ -478,19 +532,60 @@ namespace ShopCountProject
             {
                 richTextBox2.Clear();
                 listBox.AddRange((string[])richTextBox1.Lines);
+                cookieList.AddRange((string[])cookieRichBox.Lines);
+                
                 foreach (var url in listBox)
                 {
-                    if (driver == null)
-                        driver = new PhantomJSDriver();
+                   
 
-                    driver.Url = url;
-                    List<string> duplicate = new List<string>();
-                    duplicate = getDuplicateProduct(duplicate);
+                    if (checkCookie.Checked)
+                    {
+                        if (driver == null)
+                            driver = new FirefoxDriver();
+                        driver.Url = url;
 
-                    richTextBox2.Text += Environment.NewLine + url + "   Ilosc duplikatów : " + duplicate.Count();
+                        for (int j = 0; j < cookieList.Count; j++)
+                        {
+                           
+                            List<string> duplicate = new List<string>();
+                            Cookie cookie = new Cookie("OIATM", cookieList[j]);
+                            do
+                            {
+                                driver.Manage().Cookies.DeleteCookieNamed("OIATM");
+                                driver.Manage().Cookies.AddCookie(cookie);
+                                driver.Url = url ;
+
+                            } while (driver.Manage().Cookies.GetCookieNamed("OIATM").Value != cookieList[j]);
+
+                            duplicate = getDuplicateProduct(duplicate);
+
+                            richTextBox2.Text += Environment.NewLine + url + " Wersja : " + (j+1) + "   Ilosc duplikatów : " + duplicate.Count();
+                        }
+                    }
+                    else
+                    {
+                        if (driver == null)
+                            driver = new PhantomJSDriver();
+
+                        driver.Url = url;
+                        List<string> duplicate = new List<string>();
+                        duplicate = getDuplicateProduct(duplicate);
+
+                        richTextBox2.Text += Environment.NewLine + url + "   Ilosc duplikatów : " + duplicate.Count();
+                    }
                 }
+
                 listBox = new List<string>();
-                driver.Quit();
+                try
+                {
+                    driver.Quit();
+                }
+                catch (Exception)
+                {
+
+                    
+                }
+                
                 driver = null;
             }
 
@@ -516,7 +611,50 @@ namespace ShopCountProject
             openFile.Title = "Otwórz urle";
             openFile.ShowDialog();
 
-            richTextBox1.LoadFile(openFile.FileName, RichTextBoxStreamType.PlainText);
+            try
+            {
+                richTextBox1.LoadFile(openFile.FileName, RichTextBoxStreamType.PlainText);
+
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "Text|*.txt";
+            openFile.Title = "Otwórz urle";
+            openFile.ShowDialog();
+
+            try
+            {
+                cookieRichBox.LoadFile(openFile.FileName, RichTextBoxStreamType.PlainText);
+
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "Text|*.txt";
+            saveFileDialog1.Title = "Zapisz urle";
+            saveFileDialog1.ShowDialog();
+            try
+            {
+                cookieRichBox.SaveFile(saveFileDialog1.FileName, RichTextBoxStreamType.PlainText);
+
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }

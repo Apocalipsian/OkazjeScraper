@@ -33,7 +33,6 @@
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.compareTrunk = new System.Windows.Forms.CheckBox();
             this.trunkUrl = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.button3 = new System.Windows.Forms.Button();
@@ -45,10 +44,12 @@
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.cookieRichBox = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.checkCookie = new System.Windows.Forms.CheckBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.checkCookie = new System.Windows.Forms.CheckBox();
+            this.button4 = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.checkOneFile = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -80,16 +81,16 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(12, 142);
+            this.richTextBox1.Location = new System.Drawing.Point(12, 172);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(455, 353);
+            this.richTextBox1.Size = new System.Drawing.Size(455, 323);
             this.richTextBox1.TabIndex = 3;
             this.richTextBox1.Text = "";
             // 
             // compareTrunk
             // 
             this.compareTrunk.AutoSize = true;
-            this.compareTrunk.Location = new System.Drawing.Point(12, 104);
+            this.compareTrunk.Location = new System.Drawing.Point(12, 130);
             this.compareTrunk.Name = "compareTrunk";
             this.compareTrunk.Size = new System.Drawing.Size(124, 17);
             this.compareTrunk.TabIndex = 4;
@@ -98,22 +99,10 @@
             // 
             // trunkUrl
             // 
-            this.trunkUrl.Location = new System.Drawing.Point(142, 103);
+            this.trunkUrl.Location = new System.Drawing.Point(142, 129);
             this.trunkUrl.Name = "trunkUrl";
             this.trunkUrl.Size = new System.Drawing.Size(296, 20);
             this.trunkUrl.TabIndex = 5;
-            // 
-            // button1
-            // 
-            this.button1.BackgroundImage = global::ShopCountProject.Properties.Resources.cover_2;
-            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.button1.Location = new System.Drawing.Point(519, 543);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(464, 122);
-            this.button1.TabIndex = 7;
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
@@ -145,10 +134,10 @@
             this.checkListing.Checked = true;
             this.checkListing.Location = new System.Drawing.Point(15, 19);
             this.checkListing.Name = "checkListing";
-            this.checkListing.Size = new System.Drawing.Size(67, 17);
+            this.checkListing.Size = new System.Drawing.Size(90, 17);
             this.checkListing.TabIndex = 10;
             this.checkListing.TabStop = true;
-            this.checkListing.Text = "LISTING";
+            this.checkListing.Text = "LISTING / LF";
             this.checkListing.UseVisualStyleBackColor = true;
             // 
             // groupBox1
@@ -167,9 +156,9 @@
             this.checkLf.AutoSize = true;
             this.checkLf.Location = new System.Drawing.Point(15, 42);
             this.checkLf.Name = "checkLf";
-            this.checkLf.Size = new System.Drawing.Size(37, 17);
+            this.checkLf.Size = new System.Drawing.Size(85, 17);
             this.checkLf.TabIndex = 13;
-            this.checkLf.Text = "LF";
+            this.checkLf.Text = "DUPLIKATY";
             this.checkLf.UseVisualStyleBackColor = true;
             // 
             // groupBox2
@@ -213,6 +202,16 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "CIASTKA";
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(100, 187);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(87, 29);
+            this.button5.TabIndex = 18;
+            this.button5.Text = "Zapisz";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // checkCookie
             // 
             this.checkCookie.AutoSize = true;
@@ -223,16 +222,6 @@
             this.checkCookie.Text = "ON/OFF";
             this.checkCookie.UseVisualStyleBackColor = true;
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.richTextBox2);
-            this.groupBox4.Location = new System.Drawing.Point(512, 12);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(489, 239);
-            this.groupBox4.TabIndex = 16;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "DUPLIKATY ";
-            // 
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(7, 187);
@@ -241,15 +230,43 @@
             this.button4.TabIndex = 17;
             this.button4.Text = "Otwórz";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // button5
+            // groupBox4
             // 
-            this.button5.Location = new System.Drawing.Point(100, 187);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(87, 29);
-            this.button5.TabIndex = 18;
-            this.button5.Text = "Zapisz";
-            this.button5.UseVisualStyleBackColor = true;
+            this.groupBox4.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.groupBox4.Controls.Add(this.richTextBox2);
+            this.groupBox4.Location = new System.Drawing.Point(512, 12);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(489, 239);
+            this.groupBox4.TabIndex = 16;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "DUPLIKATY ";
+            // 
+            // button1
+            // 
+            this.button1.BackgroundImage = global::ShopCountProject.Properties.Resources.logo_950;
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.button1.Location = new System.Drawing.Point(691, 544);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(286, 122);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "MICHAŁ MISTRZEM !!";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // checkOneFile
+            // 
+            this.checkOneFile.AutoSize = true;
+            this.checkOneFile.Location = new System.Drawing.Point(12, 100);
+            this.checkOneFile.Name = "checkOneFile";
+            this.checkOneFile.Size = new System.Drawing.Size(171, 17);
+            this.checkOneFile.TabIndex = 17;
+            this.checkOneFile.Text = "ZAPISZ DO JEDNEGO PLIKU";
+            this.checkOneFile.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            this.checkOneFile.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -257,6 +274,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1013, 687);
+            this.Controls.Add(this.checkOneFile);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -303,6 +321,7 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.CheckBox checkOneFile;
     }
 }
 

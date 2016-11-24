@@ -108,6 +108,8 @@
     <Content Include="phantomjs-license.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\6969987-batman-logo-background.jpg" />
+    <None Include="Resources\logo-950.png" />
     <None Include="Resources\cover 2.png" />
   </ItemGroup>
   <ItemGroup>
