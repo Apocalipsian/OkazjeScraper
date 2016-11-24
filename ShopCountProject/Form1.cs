@@ -18,6 +18,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -33,7 +34,7 @@ namespace ShopCountProject
         static public List<string> productIdList = new List<string>();
         public static List<string> listBox = new List<string>();
         public List<List<string>> oneList = new List<List<string>>();
-        public List<string> cookieList = new List<string>();
+        static public  List<string> cookieList = new List<string>();
 
         #endregion
 
@@ -43,17 +44,18 @@ namespace ShopCountProject
                    @"//div[@id='listingPage']//div[contains(@class,'rightCol')]/div[contains(@class,'squaresListing')]
                     /div[contains(@class, 'squaresContent narrow')]/div[contains(@class, 'productItem')]//a[contains(@class,'productItemContent')]")).Select(w => w.GetAttribute("data_product_id")).ToList();
 
-            var duplicate = listProductId.GroupBy(x => x)
-                .Where(g => g.Count() > 1)
-                .Select(y => y.Key)
-                .ToList();
+                var duplicate = listProductId.GroupBy(x => x)
+                    .Where(g => g.Count() > 1)
+                    .Select(y => y.Key)
+                    .ToList();
+                return duplicate;
 
-            return duplicate;
         }
 
         public List<string> getCookie()
         {
             List<string> cookieList = new List<string>();
+
             if (cookieRichBox.Lines.Length > 0)
             {
                 cookieList.AddRange((string[])cookieRichBox.Lines);
@@ -198,6 +200,7 @@ namespace ShopCountProject
 
             //        var tmp = result.Count();
             //// na plikach
+
             if (checkOneFile.Checked == false)
             {
                 if (Directory.Exists(@".\" + DateTime.Today.ToString("dd_MM_yyyy")) == false)
@@ -287,13 +290,13 @@ namespace ShopCountProject
                     }
 
                   //  csvWrite.AppendLine("Wersja " +(j+1));
-                    sortList(lista, (j+1));
+                    sortList(lista, 1,cookieList[j]);
 
 
                     lista = new List<string>();
                 }
                 if (countWeb != 1)
-                    sortList(listaAll, 0);
+                    sortList(listaAll, 0,cookieList[j]);
 
                 #region duplikaty na listingach
                 //        var topCategory_id = driver.FindElements(By.XPath(
@@ -403,7 +406,66 @@ namespace ShopCountProject
             csvWrite.AppendLine(Environment.NewLine);
 
         }
+        public void sortList(List<string> lista, int lastPage, string cookieTittle)
+        {
+            // csvWrite.Clear();
 
+            //  csvWrite.AppendLine(driver.Url);
+
+            string tmp = "";
+
+            var numberMulti = from c in lista
+                              where c.Contains("ofert")
+
+                              select new { c };
+
+            int countTmp = numberMulti.Count();
+
+            lista.RemoveAll(u => u.Contains("ofert"));
+
+
+            var q = from x in lista
+
+                    group x by x into g
+                    let count = g.Count()
+                    orderby count descending
+                    select new { Value = g.Key, Count = count };
+
+
+
+            foreach (var x in q)
+            {
+                if (lastPage == 0)
+                {
+                    var newLine = string.Format(cookieTittle + ";"+ driver.Url + "   TOTAL;{0};{1};", x.Value, x.Count);
+                    csvWrite.AppendLine(newLine);
+                    tmp = driver.Url + "   TOTAL";
+                }
+                else
+                {
+                    var newLine = string.Format(cookieTittle + ";" +"{0};{1};{2};", driver.Url, x.Value, x.Count);
+                    csvWrite.AppendLine(newLine);
+                    tmp = driver.Url;
+                }
+            }
+
+
+
+            var newLine2 = string.Format(cookieTittle + ";"+"{0};Produkty wielofertowe;{1}", tmp, countTmp);
+            csvWrite.AppendLine(newLine2);
+
+
+            var newLine3 = string.Format(cookieTittle + ";"+"{0};Ilość produktów; {1}", tmp, (lista.Count + countTmp));
+            csvWrite.AppendLine(newLine3);
+
+
+            var newLine4 = string.Format(cookieTittle + ";"+"{0};Ilość sklepów; {1}", tmp, (q.Count()));
+            csvWrite.AppendLine(newLine4);
+
+
+            csvWrite.AppendLine(Environment.NewLine);
+
+        }
 
 
         public Form1()
@@ -417,7 +479,10 @@ namespace ShopCountProject
 
             if (checkCookie.Checked && checkLf.Checked == false)
             {
+                richTextBox1.Text = Regex.Replace(richTextBox1.Text, @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline);
                 listBox.AddRange((string[])richTextBox1.Lines);
+                if (listBox[listBox.Count - 1] == "")
+                    listBox.RemoveAt(listBox.Count - 1);
 
                 foreach (var url in listBox)
                 {
@@ -451,8 +516,14 @@ namespace ShopCountProject
             {
                 if (richTextBox1.Lines.Length > 0)
                 {
+                    listBox = new List<string>();
+                    richTextBox1.Text = Regex.Replace(richTextBox1.Text, @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline);
+
                     listBox.AddRange((string[])richTextBox1.Lines);
 
+                    if (listBox[listBox.Count - 1] == "")
+                        listBox.RemoveAt(listBox.Count-1);
+                    
                     if (simpleSite.Checked)
                     {
                         foreach (var url in listBox)
@@ -530,10 +601,25 @@ namespace ShopCountProject
 
             if (checkLf.Checked)
             {
+                listBox = new List<string>();
                 richTextBox2.Clear();
+
+
+                richTextBox1.Text = Regex.Replace(richTextBox1.Text, @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline);
+
                 listBox.AddRange((string[])richTextBox1.Lines);
+
+                if (listBox[listBox.Count - 1] == "")
+                    listBox.RemoveAt(listBox.Count - 1);
+
+
+
+                cookieRichBox.Text = Regex.Replace(cookieRichBox.Text, @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline);
                 cookieList.AddRange((string[])cookieRichBox.Lines);
-                
+
+                if (cookieList[cookieList.Count - 1] == "")
+                    cookieList.RemoveAt(cookieList.Count - 1);
+
                 foreach (var url in listBox)
                 {
                    
@@ -560,6 +646,16 @@ namespace ShopCountProject
                             duplicate = getDuplicateProduct(duplicate);
 
                             richTextBox2.Text += Environment.NewLine + url + " Wersja : " + (j+1) + "   Ilosc duplikatów : " + duplicate.Count();
+                        }
+
+                        try
+                        {
+                            driver.Quit();
+                        }
+                        catch (Exception)
+                        {
+                            driver = null;
+                            
                         }
                     }
                     else
@@ -655,6 +751,17 @@ namespace ShopCountProject
             {
 
             }
+        }
+
+        private void checkLf_CheckedChanged(object sender, EventArgs e)
+        {
+            rodzajTestu.Enabled = false;
+            simpleSite.Checked = true;
+        }
+
+        private void checkListing_CheckedChanged(object sender, EventArgs e)
+        {
+            rodzajTestu.Enabled = true;
         }
     }
 }

@@ -40,7 +40,7 @@
             this.checkListing = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkLf = new System.Windows.Forms.RadioButton();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.rodzajTestu = new System.Windows.Forms.GroupBox();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.cookieRichBox = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -51,7 +51,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.checkOneFile = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.rodzajTestu.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
@@ -139,6 +139,7 @@
             this.checkListing.TabStop = true;
             this.checkListing.Text = "LISTING / LF";
             this.checkListing.UseVisualStyleBackColor = true;
+            this.checkListing.CheckedChanged += new System.EventHandler(this.checkListing_CheckedChanged);
             // 
             // groupBox1
             // 
@@ -160,17 +161,18 @@
             this.checkLf.TabIndex = 13;
             this.checkLf.Text = "DUPLIKATY";
             this.checkLf.UseVisualStyleBackColor = true;
+            this.checkLf.CheckedChanged += new System.EventHandler(this.checkLf_CheckedChanged);
             // 
-            // groupBox2
+            // rodzajTestu
             // 
-            this.groupBox2.Controls.Add(this.simpleSite);
-            this.groupBox2.Controls.Add(this.radioButton2);
-            this.groupBox2.Location = new System.Drawing.Point(238, 12);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 70);
-            this.groupBox2.TabIndex = 12;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "RODZAJ TESTU";
+            this.rodzajTestu.Controls.Add(this.simpleSite);
+            this.rodzajTestu.Controls.Add(this.radioButton2);
+            this.rodzajTestu.Location = new System.Drawing.Point(238, 12);
+            this.rodzajTestu.Name = "rodzajTestu";
+            this.rodzajTestu.Size = new System.Drawing.Size(200, 70);
+            this.rodzajTestu.TabIndex = 12;
+            this.rodzajTestu.TabStop = false;
+            this.rodzajTestu.Text = "RODZAJ TESTU";
             // 
             // richTextBox2
             // 
@@ -253,7 +255,6 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(286, 122);
             this.button1.TabIndex = 7;
-            this.button1.Text = "MICHAŁ MISTRZEM !!";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -277,7 +278,7 @@
             this.Controls.Add(this.checkOneFile);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.rodzajTestu);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
@@ -289,8 +290,8 @@
             this.Text = "Form1";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.rodzajTestu.ResumeLayout(false);
+            this.rodzajTestu.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -313,7 +314,7 @@
         private System.Windows.Forms.RadioButton checkListing;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton checkLf;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox rodzajTestu;
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.RichTextBox cookieRichBox;
         private System.Windows.Forms.GroupBox groupBox3;
