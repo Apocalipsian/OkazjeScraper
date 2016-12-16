@@ -34,7 +34,7 @@ namespace ShopCountProject
         static public List<string> productIdList = new List<string>();
         public static List<string> listBox = new List<string>();
         public List<List<string>> oneList = new List<List<string>>();
-        static public  List<string> cookieList = new List<string>();
+        static public List<string> cookieList = new List<string>();
 
         #endregion
 
@@ -44,13 +44,15 @@ namespace ShopCountProject
                    @"//div[@id='listingPage']//div[contains(@class,'rightCol')]/div[contains(@class,'squaresListing')]
                     /div[contains(@class, 'squaresContent narrow')]/div[contains(@class, 'productItem')]//a[contains(@class,'productItemContent')]")).Select(w => w.GetAttribute("data_product_id")).ToList();
 
-                var duplicate = listProductId.GroupBy(x => x)
-                    .Where(g => g.Count() > 1)
-                    .Select(y => y.Key)
-                    .ToList();
-                return duplicate;
+            var duplicate = listProductId.GroupBy(x => x)
+                .Where(g => g.Count() > 1)
+                .Select(y => y.Key)
+                .ToList();
+            return duplicate;
 
         }
+
+
 
         public List<string> getCookie()
         {
@@ -108,8 +110,9 @@ namespace ShopCountProject
             return tittle;
 
         }
-        public  string checkShop(List<string> listaAll, string url, int countWeb)
+        public string checkShop(List<string> listaAll, string url, int countWeb)
         {
+            tittle = "";
             if (listaAll == null)
                 listaAll = new List<string>();
 
@@ -146,7 +149,7 @@ namespace ShopCountProject
                 var productID = driver.FindElements(By.XPath(
                    @"//div[@id='listingPage']//div[contains(@class,'rightCol')]/div[contains(@class,'squaresListing')]
                     /div[contains(@class, 'squaresContent narrow')]/div[contains(@class, 'productItem')]//a[contains(@class,'productItemContent')]")).Select(w => w.GetAttribute("data_product_id"));
-
+                
 
                 foreach (var item in la)
                 {
@@ -255,18 +258,21 @@ namespace ShopCountProject
                 for (int i = 1; i <= countWeb; i++)
                 {
                     DateTime expDate = new DateTime(2016, 12, 25);
-                    cookie = new Cookie("OIATM", cookieList[j]); //, "kotreba-sort-lf.okazje.biuro", "/", expDate);
+                    cookie = new Cookie("OIATM", cookieList[j], "kotreba-sort-lf.okazje.biuro", "/", expDate);
 
                     do
                     {
                         driver.Manage().Cookies.DeleteCookieNamed("OIATM");
                         driver.Manage().Cookies.AddCookie(cookie);
-                        driver.Url = url + i + ".html";
+                        if (driver.Url.Contains("okazje.info.pl") == true)
+                            driver.Navigate().Refresh();
+                        else
+                            driver.Url = url;
+                        driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(1));
 
                     } while (driver.Manage().Cookies.GetCookieNamed("OIATM").Value != cookieList[j]);
 
 
-                    driver.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(1));
                     var la = driver.FindElements(By.XPath(
                         @"//div[@id='listingPage']//div[contains(@class,'rightCol')]/div[contains(@class,'squaresListing')]
                      /div[contains(@class,'squaresContent narrow')]/div[contains(@class,'productItem')]//a[contains(@class,'productItemContent')]
@@ -275,28 +281,46 @@ namespace ShopCountProject
 
                     var productID = driver.FindElements(By.XPath(
                        @"//div[@id='listingPage']//div[contains(@class,'rightCol')]/div[contains(@class,'squaresListing')]
-                    /div[contains(@class, 'squaresContent narrow')]/div[contains(@class, 'productItem')]//a[contains(@class,'productItemContent')]")).Select(w => w.GetAttribute("data_product_id"));
+                    /div[contains(@class, 'squaresContent narrow')]/div[contains(@class, 'productItem')]//a[contains(@class,'productItemContent')]"));//.Select(w => w.GetAttribute("data_product_id"));
+
 
 
                     foreach (var item in la)
                     {
-                        lista.Add(item.Text);
-                        listaAll.Add(item.Text);
+                        try
+                        {
+                            lista.Add(item.Text);
+                            listaAll.Add(item.Text);
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+
                     }
 
                     foreach (var item in productID)
                     {
-                        productIdList.Add(item);
+                        try
+                        {
+                            productIdList.Add(item.GetAttribute("data_product_id"));
+
+                        }
+                        catch (Exception)
+                        {
+
+
+                        }
                     }
 
-                  //  csvWrite.AppendLine("Wersja " +(j+1));
-                    sortList(lista, 1,cookieList[j]);
+                    //  csvWrite.AppendLine("Wersja " +(j+1));
+                    sortList(lista, 1, cookieList[j]);
 
 
                     lista = new List<string>();
                 }
                 if (countWeb != 1)
-                    sortList(listaAll, 0,cookieList[j]);
+                    sortList(listaAll, 0, cookieList[j]);
 
                 #region duplikaty na listingach
                 //        var topCategory_id = driver.FindElements(By.XPath(
@@ -346,7 +370,7 @@ namespace ShopCountProject
 
         }
 
-        public  void sortList(List<string> lista, int lastPage)
+        public void sortList(List<string> lista, int lastPage)
         {
             // csvWrite.Clear();
 
@@ -389,7 +413,7 @@ namespace ShopCountProject
                 }
             }
 
-           
+
 
             var newLine2 = string.Format("{0};Produkty wielofertowe;{1}", tmp, countTmp);
             csvWrite.AppendLine(newLine2);
@@ -437,13 +461,13 @@ namespace ShopCountProject
             {
                 if (lastPage == 0)
                 {
-                    var newLine = string.Format(cookieTittle + ";"+ driver.Url + "   TOTAL;{0};{1};", x.Value, x.Count);
+                    var newLine = string.Format(cookieTittle + ";" + driver.Url + "   TOTAL;{0};{1};", x.Value, x.Count);
                     csvWrite.AppendLine(newLine);
                     tmp = driver.Url + "   TOTAL";
                 }
                 else
                 {
-                    var newLine = string.Format(cookieTittle + ";" +"{0};{1};{2};", driver.Url, x.Value, x.Count);
+                    var newLine = string.Format(cookieTittle + ";" + "{0};{1};{2};", driver.Url, x.Value, x.Count);
                     csvWrite.AppendLine(newLine);
                     tmp = driver.Url;
                 }
@@ -451,15 +475,15 @@ namespace ShopCountProject
 
 
 
-            var newLine2 = string.Format(cookieTittle + ";"+"{0};Produkty wielofertowe;{1}", tmp, countTmp);
+            var newLine2 = string.Format(cookieTittle + ";" + "{0};Produkty wielofertowe;{1}", tmp, countTmp);
             csvWrite.AppendLine(newLine2);
 
 
-            var newLine3 = string.Format(cookieTittle + ";"+"{0};Ilość produktów; {1}", tmp, (lista.Count + countTmp));
+            var newLine3 = string.Format(cookieTittle + ";" + "{0};Ilość produktów; {1}", tmp, (lista.Count + countTmp));
             csvWrite.AppendLine(newLine3);
 
 
-            var newLine4 = string.Format(cookieTittle + ";"+"{0};Ilość sklepów; {1}", tmp, (q.Count()));
+            var newLine4 = string.Format(cookieTittle + ";" + "{0};Ilość sklepów; {1}", tmp, (q.Count()));
             csvWrite.AppendLine(newLine4);
 
 
@@ -479,6 +503,7 @@ namespace ShopCountProject
 
             if (checkCookie.Checked && checkLf.Checked == false)
             {
+                listBox.Clear();
                 richTextBox1.Text = Regex.Replace(richTextBox1.Text, @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline);
                 listBox.AddRange((string[])richTextBox1.Lines);
                 if (listBox[listBox.Count - 1] == "")
@@ -495,7 +520,7 @@ namespace ShopCountProject
 
                     if (simpleSite.Checked)
                         tittle = checkShop(lista, url, 1, 1);
-                   
+
                 }
 
                 if (checkOneFile.Checked)
@@ -522,10 +547,15 @@ namespace ShopCountProject
                     listBox.AddRange((string[])richTextBox1.Lines);
 
                     if (listBox[listBox.Count - 1] == "")
-                        listBox.RemoveAt(listBox.Count-1);
-                    
+                        listBox.RemoveAt(listBox.Count - 1);
+
                     if (simpleSite.Checked)
                     {
+
+
+
+
+
                         foreach (var url in listBox)
                         {
                             if (driver == null)
@@ -612,17 +642,20 @@ namespace ShopCountProject
                 if (listBox[listBox.Count - 1] == "")
                     listBox.RemoveAt(listBox.Count - 1);
 
+                if (checkCookie.Checked)
+                {
+                    cookieRichBox.Text = Regex.Replace(cookieRichBox.Text, @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline);
+                    cookieList.AddRange((string[])cookieRichBox.Lines);
+
+                    if (cookieList[cookieList.Count - 1] == "")
+                        cookieList.RemoveAt(cookieList.Count - 1);
+                }
 
 
-                cookieRichBox.Text = Regex.Replace(cookieRichBox.Text, @"^\s*$(\n|\r|\r\n)", "", RegexOptions.Multiline);
-                cookieList.AddRange((string[])cookieRichBox.Lines);
-
-                if (cookieList[cookieList.Count - 1] == "")
-                    cookieList.RemoveAt(cookieList.Count - 1);
 
                 foreach (var url in listBox)
                 {
-                   
+
 
                     if (checkCookie.Checked)
                     {
@@ -632,20 +665,22 @@ namespace ShopCountProject
 
                         for (int j = 0; j < cookieList.Count; j++)
                         {
-                           
+
                             List<string> duplicate = new List<string>();
-                            Cookie cookie = new Cookie("OIATM", cookieList[j]);
+                            Cookie cookie = new Cookie("OIATM", cookieList[j], ".okazje.info.pl", "/", DateTime.Now + TimeSpan.FromHours(5));
                             do
                             {
                                 driver.Manage().Cookies.DeleteCookieNamed("OIATM");
                                 driver.Manage().Cookies.AddCookie(cookie);
-                                driver.Url = url ;
+                                driver.Navigate().Refresh();
+                                //   var t = driver.Manage().Cookies.GetCookieNamed("OIATM").Value;
+
 
                             } while (driver.Manage().Cookies.GetCookieNamed("OIATM").Value != cookieList[j]);
 
                             duplicate = getDuplicateProduct(duplicate);
 
-                            richTextBox2.Text += Environment.NewLine + url + " Wersja : " + (j+1) + "   Ilosc duplikatów : " + duplicate.Count();
+                            richTextBox2.Text += Environment.NewLine + url + " Wersja : " + (j + 1) + "   Ilosc duplikatów : " + duplicate.Count();
                         }
 
                         try
@@ -655,7 +690,7 @@ namespace ShopCountProject
                         catch (Exception)
                         {
                             driver = null;
-                            
+
                         }
                     }
                     else
@@ -679,9 +714,9 @@ namespace ShopCountProject
                 catch (Exception)
                 {
 
-                    
+
                 }
-                
+
                 driver = null;
             }
 
@@ -762,6 +797,12 @@ namespace ShopCountProject
         private void checkListing_CheckedChanged(object sender, EventArgs e)
         {
             rodzajTestu.Enabled = true;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+
         }
     }
 }
